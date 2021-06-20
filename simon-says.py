@@ -1,3 +1,5 @@
+# MicroPython Simple Simon game
+# Based on 
 # Circuit Playground Express Simple Simon
 #
 # Game play based on information provided here:
@@ -7,36 +9,36 @@
 # MIT License (https://opensource.org/licenses/MIT)
 import time
 import random
-import math
 import picokeypad as keypad
-
 import machine
+from machine import Pin, PWM, ADC
 
-
+#Some constants
 FAILURE_TONE        = 100
 SEQUENCE_DELAY      = 0.8
 GUESS_TIMEOUT       = 3.0
 DEBOUNCE            = 0.250
+#Define difficulty levels:
 SEQUENCE_LENGTH = {
-  1 : 4,
+  1 : 8,
   2 : 14,
   3 : 20,
   4 : 31
 }
 SIMON_BUTTONS = {
-  1 : { 'pads':(0,1,4,5), 'pixels':(0,1,4,5), 'R':0x00, 'G':0xFF, 'B':0x00, 'freq':415 },
-  2 : { 'pads':(2,3,6,7), 'pixels':(2,3,6,7), 'R':0xFF, 'G':0xFF, 'B':0x00, 'freq':252 },
-  3 : { 'pads':(8,9,12,13), 'pixels':(8,9,12,13), 'R':0x00, 'G':0x00, 'B':0xFF, 'freq':209 },
-  4 : { 'pads':(10,11,14,15), 'pixels':(10,11,14,15), 'R':0xFF, 'G':0x00, 'B':0x00, 'freq':310 },  
+  1 : { 'pads':(0,1,4,5), 'pixels':(0,1,4,5), 'R':0xFF, 'G':0xFF, 'B':0x00, 'freq':415 }, 
+  2 : { 'pads':(2,3,6,7), 'pixels':(2,3,6,7), 'R':0x00, 'G':0x00, 'B':0xFF, 'freq':252 }, 
+  3 : { 'pads':(8,9,12,13), 'pixels':(8,9,12,13), 'R':0xFF, 'G':0x00, 'B':0x00, 'freq':209 }, 
+  4 : { 'pads':(10,11,14,15), 'pixels':(10,11,14,15), 'R':0x00, 'G':0xFF, 'B':0x00, 'freq':310 },  
 }
 
-#Pad 1: Green
-#Pad 2: Yellow
-#Pad 3: Blue
-#Pad 4: Red
+#Pad 1: Yellow
+#Pad 2: Blue
+#Pad 3: Red
+#Pad 4: Green
 
 #Wire a buzzer to GPIO15 for sound!
-buzzer = machine.PWM(machine.Pin(15))
+buzzer = PWM(Pin(15))
 
 keypad.init()
 keypad.set_brightness(0.7)
@@ -74,15 +76,17 @@ def choose_skill_level():
 def new_game(skill_level):
     # Seed the random function with noise from ADC pins
     
-    a1 = machine.ADC(0)
-    a2 = machine.ADC(1)
-    a3 = machine.ADC(2)
+    a1 = ADC(Pin(26))
+    a2 = ADC(Pin(27))
+    a3 = ADC(Pin(28))
     
     seed  = a1.read_u16()
     seed += a2.read_u16()
     seed += a3.read_u16()
 
     random.seed(seed)    
+
+    print("Seed=",seed)
 
     # Populate the game sequence
     return [random.randint(1,4) for i in range(SEQUENCE_LENGTH[skill_level])]
@@ -201,6 +205,7 @@ while True:
             guess = get_button_press()
         if not guess == SIMON_BUTTONS[sequence[step]]:
             game_lost(sequence[step])
+            
 
     # Advance the game forward
     current_step += 1
