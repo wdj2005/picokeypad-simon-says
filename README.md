@@ -7,4 +7,6 @@ https://shop.pimoroni.com/products/pico-rgb-keypad-base
 
 Wire a small piezo speaker/sounder to GPIO 15 and GND.
 
+Use pimoroni's micropython from here: https://github.com/pimoroni/pimoroni-pico/releases
+
 Upload the python file via Thonny. You must reset the Pico at the end of the game, whether you win or loose.
