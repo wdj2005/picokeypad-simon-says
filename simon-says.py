@@ -9,7 +9,7 @@
 # MIT License (https://opensource.org/licenses/MIT)
 import time
 import random
-import picokeypad as keypad
+import picokeypad
 import machine
 from machine import Pin, PWM, ADC
 
@@ -40,7 +40,7 @@ SIMON_BUTTONS = {
 #Wire a buzzer to GPIO15 for sound!
 buzzer = PWM(Pin(15))
 
-keypad.init()
+keypad = picokeypad.PicoKeypad()
 keypad.set_brightness(0.7)
 
 NUM_PADS = keypad.get_num_pads()
